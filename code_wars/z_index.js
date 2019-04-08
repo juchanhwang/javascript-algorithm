@@ -6,12 +6,12 @@ class Foo {
 
 class Boo extends Foo {
   func () {
-    console.log(this.hi)
+    console.log(this.hi);
   }
 }
 
 
-const foo = new Foo("w")
+const foo = new Foo("w");
 const boo = new Boo("h");
-console.log(boo.func())
-console.log(foo.func())
+console.log(boo.func());
+console.log(foo.func());
