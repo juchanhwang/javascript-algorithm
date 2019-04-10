@@ -1,17 +1,27 @@
-class Foo {
-  constructor (hi) {
-    this.hi = hi;
-  }
+function foo(a, b) {
+  const sortArr = getSort(a);
+  const result = spliceArr(sortArr, b)
+  return result;
 }
 
-class Boo extends Foo {
-  func () {
-    console.log(this.hi);
-  }
+function getSort(a) {
+  return a.sort(function (a, b) { // 오름차순
+    return a - b;
+  });
 }
 
+function spliceArr(sortArr, b) {
+  let firstIdx, lastIdx;
 
-const foo = new Foo("w");
-const boo = new Boo("h");
-console.log(boo.func());
-console.log(foo.func());
+  b.forEach(element => {
+    if (sortArr.includes(element)) {
+      firstIdx = sortArr.indexOf(element);
+      lastIdx = sortArr.lastIndexOf(element) || 1;
+      sortArr.splice(firstIdx, 1);
+    }
+  });
+
+  return sortArr;
+}
+
+console.log(foo([3,4], [3]))

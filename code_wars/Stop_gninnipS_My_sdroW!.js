@@ -16,7 +16,7 @@ function reverseStr(val) {
 function test(input, expect) {
   const result = spinWords(input);
   console.log(`input : ${input}, result : ${result}`)
-  return (result === expect) ? "pass!" : "fail!"
+  return (result === expect) ? console.log("pass!") : console.log("fail!")
 }
 
 
