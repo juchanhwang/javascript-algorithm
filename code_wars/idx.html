@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <pre class="result"></pre>
+    <h2>2</h2>
+    <script>
+      const $result = document.querySelector(".result");
+      const render = content => {
+        $result.textContent = JSON.stringify(content, null, 2);
+      };
+
+      const promiseAjax = (method, url) => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open(method, url);
+          xhr.setRequestHeader("Content-type", "application/json");
+          xhr.send();
+
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            if (xhr.status >= 200 && xhr.status < 400) {
+              console.log(xhr)
+              resolve(xhr.response); // Success!
+            } else {
+              reject(new Error(xhr.status)); // Failed...
+            }
+          };
+        });
+      };
+
+      const getEmployeeDetail = id => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          let url = EMPLOYEE_URL + id;
+          xhr.open('GET', url);
+          xhr.setRequestHeader("Content-type", "application/json");
+          xhr.send();
+        });
+      };
+
+      const EMPLOYEE_LIST_URL =
+        "http://dummy.restapiexample.com/api/v1/employees";
+      const EMPLOYEE_URL = "http://dummy.restapiexample.com/api/v1/employee/";
+
+      Promise.reduce = function(arr, iteratee, initialValue) {
+        return new Promise((resolve, reject) => {
+          let index = 0;
+          function repeat(total, item) {
+            iteratee(total, item).then(function(result) {
+              console.log(result);
+              index++;
+              if (index === arr.length) {
+                return resolve(result);
+              }
+              repeat(result, arr[index]);
+            });
+          }
+          repeat(initialValue, arr[0]);
+        });
+      };
+
+      // 포스트 id가 1인 포스트를 검색하고 프로미스를 반환한다.
+      promiseAjax("GET", `${EMPLOYEE_LIST_URL}`)
+        .then(data => {
+          console.log('data',typeof data)
+          const list = JSON.parse(data);
+          console.log('list',typeof list)
+          console.log(list[0].employee_salary);
+          return list.map(item => item.id).slice(0, 10);
+        })
+        .then(ids => {
+          Promise.reduce(
+            ids,
+            (total, id) => {
+              return getEmployeeDetail(id).then(data => {
+                const employee = JSON.parse(data);
+                return total + Number(employee.employee_salary);
+              });
+            },
+            0
+          ).then(total => {
+            console.log(total)
+            const result = `Total Salary: ${total}`;
+            console.log(result);
+            document.querySelector("h2").textContent = result;
+          });
+        });
+      // .then(res => JSON.parse(res))
+      // .then(render)
+      // .catch(console.error);
+      // promiseAjax(
+      //   "GET",
+      //   `${EMPLOYEE_LIST_URL}?userId=${JSON.parse(res).userId}`
+      // )
+    </script>
+  </body>
+</html>
